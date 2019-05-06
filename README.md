@@ -3,5 +3,5 @@ A hacking tool that automates and encapsulates scanning, exploiting and gaining 
 
 <h1>Usage:</h1> 
 msfdb init  <br/> 
-msfconsole autosploit.rc
+msfconsole -r autosploit.rc
 
